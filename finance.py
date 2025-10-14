@@ -34,4 +34,5 @@ class FinanceDataAnalyzer(BaseAnalyzer):
                 self.tickers, period=period, interval=interval, start=start, end=end
             ),
         )
+        self.df.columns = ["_".join(col) for col in self.df.columns]
         self.df.to_excel(self.fpath_data)
