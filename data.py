@@ -40,19 +40,6 @@ class DataContainer:
                 filtered_df = filtered_df[filtered_df[col] == match]
         return DataContainer.from_dataframe(filtered_df)
 
-    # def filter(self, filter_matchlist, filter_method="matchvalue"):
-    #     """
-    #     Filter dataframe using column-name/value pairs specified in
-    #     `filter_conds`.
-    #     """
-    #     filtered_df = self.df
-    #     for col, match in filter_matchlist.items():
-    #         if filter_method == "matchvalue":
-    #             filtered_df = filtered_df[filtered_df[col] == match]
-    #         elif filter_method == "matchlambda":
-    #             filtered_df = filtered_df[match(filtered_df[col])]
-    #     return DataContainer.from_dataframe(filtered_df)
-
     def read_data(self, fpath, usecols=None, sheet_name=0, low_memory=True) -> None:
         """
         Generic function to read different kinds of data
@@ -100,11 +87,6 @@ class ClinicalDataContainer(DataContainer):
         self.preprocess_df(**preprocess_opts)
         self.assert_no_repeated_mrns()
 
-    # def __init__(self, fpath, sheet_name=0, preprocess_opts={}) -> None:
-    #     super().__init__(fpath, sheet_name)
-    #     self.preprocess_df(**preprocess_opts)
-    #     self.assert_no_repeated_mrns()
-    #
     def preprocess_df(self, drop_incomplete_rows=None, format_dashed_mrns=None) -> None:
         """
         Preprocess clinical data:

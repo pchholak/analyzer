@@ -13,12 +13,6 @@ class BaseAnalyzer:
             os.makedirs(results_dir)
 
 
-class SignalDataAnalyzer(BaseAnalyzer):
-    def __init__(self, data_dir, results_dir, signal: Signal) -> None:
-        super().__init__(data_dir, results_dir)
-        self.signal = signal
-
-
 class SingleDataAnalyzer(BaseAnalyzer):
     def __init__(self, data_dir, results_dir, data_container: DataContainer) -> None:
         super().__init__(data_dir, results_dir)
@@ -35,3 +29,9 @@ class PairedAnalyzer(BaseAnalyzer):
         self.fpath_data2 = data2.fpath
         self.df1 = data1.df
         self.df2 = data2.df
+
+
+class SignalDataAnalyzer(BaseAnalyzer):
+    def __init__(self, data_dir, results_dir, signal: Signal) -> None:
+        super().__init__(data_dir, results_dir)
+        self.signal = signal
