@@ -5,6 +5,8 @@ import pandas as pd
 
 class DataContainer:
 
+    df: pd.DataFrame
+
     def __init__(
         self, fpath, usecols=None, sheet_name=0, low_memory=True, cols_dt=[]
     ) -> None:
