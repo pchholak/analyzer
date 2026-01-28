@@ -1,5 +1,7 @@
+# import pingouin as pg
 from scipy import stats
-from utils.helpers import test_difference_wilcoxon, test_normality_shapirowilk
+from .utils.helpers import test_difference_wilcoxon, test_normality_shapirowilk
+
 
 from .base import PairedAnalyzer, SingleDataAnalyzer
 from .data import DataContainer
@@ -86,3 +88,14 @@ class StatisticalAnalyzer(SingleDataAnalyzer):
         text = f"{method} correlation coefficient between '{col1}' and '{col2}' = {corr:0.2f} (p = {pval:0.2E})"
         print(text)
         return corr, pval, method
+
+    def calculate_partial_corr(self, col1, col2, cols_covar: list[str], method='pearson', alternative="two-sided"):
+        """
+        Calculates the partial correlation coefficient between columns `col1` and `col2`,
+        controlling for `cols_covar`, using `method` method. The alternative hypothesis to
+        be used by pingouin.partial_corr is specified by `alternative` (default: "two-sided").
+        """
+        # results = pg.partial_corr(data=self.df, x=col1, y=col2, covar=cols_covar, method=method, alternative=alternative)
+        results = self.df.partial_corr(x=col1, y=col2, covar=cols_covar, method=method, alternative=alternative)
+        corr, pval = results[['r', 'p-val']].iloc[0]
+        return corr, pval

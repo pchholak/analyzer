@@ -190,3 +190,17 @@ class GraphicalAnalyzer(SingleDataAnalyzer, GenericGraphicalAnalyzer):
         ax.set_title(caption)
         plt.tight_layout()
         return ax
+
+    def scatter_plot_covariates(self, col1, col2, col_covars: list[str], caption="", ax=None):
+        """
+        Create a scatter plot from data in columns `col1` and `col2`.
+        """
+        if ax is None:
+            _, ax = plt.subplots(1, 2)
+        ax[0].scatter(self.df[col1], self.df[col2])
+        ax[0].set_xlabel(col1)
+        ax[0].set_ylabel(col2)
+        ax[0].set_title(caption)
+        plt.tight_layout()
+        plt.show()
+        return ax

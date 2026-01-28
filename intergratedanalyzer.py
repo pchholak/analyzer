@@ -7,7 +7,7 @@ from .signalanalysis import SignalProcessor
 from .stats import PairedStatisticalAnalyzer, StatisticalAnalyzer
 
 
-class IntergratedPairedAnalyzer(PairedStatisticalAnalyzer, PairedGraphicalAnalyzer):
+class IntegratedPairedAnalyzer(PairedStatisticalAnalyzer, PairedGraphicalAnalyzer):
 
     def paired_histograms(
         self, col, bins=20, caption="", ax=None, labels=..., annotate_diff=None
@@ -23,7 +23,7 @@ class IntergratedPairedAnalyzer(PairedStatisticalAnalyzer, PairedGraphicalAnalyz
         return ax
 
 
-class IntergratedAnalyzer(StatisticalAnalyzer, GraphicalAnalyzer):
+class IntegratedAnalyzer(StatisticalAnalyzer, GraphicalAnalyzer):
     def histogram(self, col, bins=20, caption="", ax=None, annotate_normality=None):
         """
         Adds optional normality annotation to the plot.
