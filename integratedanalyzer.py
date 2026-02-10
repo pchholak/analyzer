@@ -46,6 +46,34 @@ class IntegratedAnalyzer(StatisticalAnalyzer, GraphicalAnalyzer):
             ax.set_title(caption)
         return ax
 
+    def scatter_plot_covariates(
+        self,
+        col1,
+        col2,
+        col_covars: list[str],
+        caption="",
+        ax=None,
+        annotate_corr=None,
+        method="pearson",
+    ):
+        """
+        Adds partial corr coef annotation to the plot.
+
+        [TODO]: move `method` from function args to **kwargs.
+        """
+        ax = super().scatter_plot_covariates(col1, col2, col_covars, caption, ax)
+        if annotate_corr and annotate_corr is not None:
+            corr, pval, corr_method = self.calculate_partial_corr(
+                col1, col2, col_covars, method=method
+            )
+            caption = f"Partial {corr_method.capitalize()} corr. coef. = {corr:0.2f} (p = {pval:0.2E})"
+            # ax.set_title(caption)
+            fig = ax.get_figure()
+            fig.suptitle(caption)
+            fig.tight_layout()
+            ax = fig.gca()
+        return ax
+
 
 class IntegratedSignalAnalyzer(SignalProcessor, SignalGraphicalAnalyzer):
     pass
