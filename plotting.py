@@ -4,6 +4,7 @@ from typing import Optional
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
+from matplotlib.gridspec import GridSpec
 
 from .base import BaseAnalyzer, PairedAnalyzer, SignalDataAnalyzer, SingleDataAnalyzer
 
@@ -191,16 +192,44 @@ class GraphicalAnalyzer(SingleDataAnalyzer, GenericGraphicalAnalyzer):
         plt.tight_layout()
         return ax
 
-    def scatter_plot_covariates(self, col1, col2, col_covars: list[str], caption="", ax=None):
+    def scatter_plot_covariates(
+        self, col1, col2, col_covars: list[str], caption="", ax=None
+    ):
         """
         Create a scatter plot from data in columns `col1` and `col2`.
         """
         if ax is None:
-            _, ax = plt.subplots(1, 2)
-        ax[0].scatter(self.df[col1], self.df[col2])
-        ax[0].set_xlabel(col1)
-        ax[0].set_ylabel(col2)
-        ax[0].set_title(caption)
+            fig = plt.figure()
+        else:
+            fig = ax.get_figure()
+        gs = GridSpec(nrows=2, ncols=(1 + len(col_covars)), figure=fig)
+
+        # Primary scatter plot
+        ax_1 = fig.add_subplot(gs[:, 0])
+        ax_1.scatter(self.df[col1], self.df[col2])
+        ax_1.set_xlabel(col1)
+        ax_1.set_ylabel(col2)
         plt.tight_layout()
-        plt.show()
+
+        # Secondary scatter plots
+        for i_cov in range(len(col_covars)):
+
+            # Plot x against covariates
+            ax_21 = fig.add_subplot(gs[0, i_cov + 1])
+            ax_21.scatter(self.df[col_covars[i_cov]], self.df[col1])
+            ax_21.set_xlabel(col_covars[i_cov])
+            ax_21.set_ylabel(col1)
+            plt.tight_layout()
+
+            # Plot y against covariates
+            ax_22 = fig.add_subplot(gs[1, i_cov + 1])
+            ax_22.scatter(self.df[col_covars[i_cov]], self.df[col2])
+            ax_22.set_xlabel(col_covars[i_cov])
+            ax_22.set_ylabel(col2)
+            plt.tight_layout()
+
+        # plt.show()
+        ax = fig.gca()
+        ax.set_title(caption)
+
         return ax
