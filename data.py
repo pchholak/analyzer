@@ -9,7 +9,12 @@ class DataContainer:
     df: pd.DataFrame
 
     def __init__(
-        self, fpath, usecols=None, sheet_name=0, low_memory=True, cols_dt=[]
+        self,
+        fpath,
+        usecols: list[str] | None = None,
+        sheet_name=0,
+        low_memory=True,
+        cols_dt=[],
     ) -> None:
         self.fpath = fpath
         self.read_data(
@@ -43,7 +48,9 @@ class DataContainer:
                 filtered_df = filtered_df[filtered_df[col] == match]
         return DataContainer.from_dataframe(filtered_df)
 
-    def read_data(self, fpath, usecols=None, sheet_name=0, low_memory=True) -> None:
+    def read_data(
+        self, fpath, usecols: list[str] | None = None, sheet_name=0, low_memory=True
+    ) -> None:
         """
         Generic function to read different kinds of data
         as dataframes.
@@ -109,10 +116,12 @@ class ClinicalDataContainer(DataContainer):
         low_memory=True,
         cols_dt=[],
         preprocess_opts={},
+        allow_duplicate_mrns: bool = False,
     ) -> None:
         super().__init__(fpath, usecols, sheet_name, low_memory, cols_dt)
         self.preprocess_df(**preprocess_opts)
-        self.assert_no_repeated_mrns()
+        if not allow_duplicate_mrns:
+            self.assert_no_repeated_mrns()
 
     def preprocess_df(self, drop_incomplete_rows=None, format_dashed_mrns=None) -> None:
         """
@@ -123,9 +132,8 @@ class ClinicalDataContainer(DataContainer):
         if drop_incomplete_rows and drop_incomplete_rows is not None:
             self.df.dropna(inplace=True)  # drop rows with any missing data
         if format_dashed_mrns and format_dashed_mrns is not None:
-            if "MRN" in self.df.columns and (
-                self.df["MRN"].dtype == str or self.df["MRN"].dtype == object
-            ):
+            print("\nFormatting dashed MRNs...")
+            if "MRN" in self.df.columns:
                 self.df["MRN"] = self.df["MRN"].str.replace("-", "")
                 self.df["MRN"] = self.df["MRN"].astype(int)
 
