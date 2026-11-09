@@ -1,0 +1,11 @@
+name: analysis
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pypdf2
+  - pip
+  - pip:
+    - -e .
+
+# Install using: `conda env create -f environment.yml`

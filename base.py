@@ -1,8 +1,7 @@
 import os
 
-from analyzer.signal import Signal
-
 from .data import DataContainer
+from .signals import Signal
 
 
 class BaseAnalyzer:
