@@ -5,7 +5,11 @@ from scipy import stats
 
 from .base import PairedAnalyzer, SingleDataAnalyzer
 from .data import DataContainer
-from .utils.helpers import test_difference_wilcoxon, test_normality_shapirowilk
+from .utils.helpers import (
+    test_difference_ttest,
+    test_difference_wilcoxon,
+    test_normality_shapirowilk,
+)
 
 
 class PairedStatisticalAnalyzer(PairedAnalyzer):
@@ -28,9 +32,9 @@ class PairedStatisticalAnalyzer(PairedAnalyzer):
         # Run normality checks on all columns of interest in both data containers
         self.normality = {}
         for col in cols_of_interest:
-            print(f"Normality check on {self.label1}/'{col}':")
+            print(f"\nNormality check on {self.label1}/'{col}':")
             self.normality[("data1", col)] = test_normality_shapirowilk(self.df1[col])
-            print(f"Normality check on {self.label2}/'{col}':")
+            print(f"\nNormality check on {self.label2}/'{col}':")
             self.normality[("data2", col)] = test_normality_shapirowilk(self.df2[col])
 
     def test_difference_col(self, col):
@@ -45,14 +49,14 @@ class PairedStatisticalAnalyzer(PairedAnalyzer):
 
         # Compare data containers
         if method == "Wilcoxon":
-            # res = stats.ranksums(self.df1[col], self.df2[col])
             print(f"Difference between {self.label1} and {self.label2} along '{col}':")
-            difference, pval = test_difference_wilcoxon(self.df1[col], self.df2[col])
+            different, pval = test_difference_wilcoxon(self.df1[col], self.df2[col])
         elif method == "t":
-            ...
+            print(f"Difference between {self.label1} and {self.label2} along '{col}':")
+            different, pval = test_difference_ttest(self.df1[col], self.df2[col])
         else:
             raise ValueError(f"The `method={method}` is not recognized.")
-        return difference, pval, method
+        return different, pval, method
 
 
 class StatisticalAnalyzer(SingleDataAnalyzer):
@@ -66,7 +70,7 @@ class StatisticalAnalyzer(SingleDataAnalyzer):
         # Run normality checks on all columns of interest
         self.normality = {}
         for col in cols_of_interest:
-            print(f"Normality check on '{col}':")
+            print(f"\nNormality check on '{col}':")
             self.normality[col] = test_normality_shapirowilk(self.df[col])
 
     def calculate_group_diff(
@@ -116,8 +120,8 @@ class StatisticalAnalyzer(SingleDataAnalyzer):
         elif method == "Pearson":
             corr, pval = stats.pearsonr(self.df[col1], self.df[col2])
         else:
-            raise ValueError(f"The `method={method}` is not recognized.")
-        text = f"{method} correlation coefficient between '{col1}' and '{col2}' = {corr:0.2f} (p = {pval:0.2E})"
+            raise ValueError(f"\nThe `method={method}` is not recognized.")
+        text = f"\n{method} correlation coefficient between '{col1}' and '{col2}' = {corr:0.2f} (p = {pval:0.2E})"
         print(text)
         return corr, pval, method
 
