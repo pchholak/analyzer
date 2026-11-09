@@ -2,7 +2,7 @@ import textwrap
 from collections import Counter
 
 import matplotlib.pyplot as plt
-from scipy.stats import ranksums, shapiro
+from scipy.stats import ranksums, shapiro, ttest_ind
 
 
 def test_normality_shapirowilk(data, verbose=True):
@@ -15,11 +15,9 @@ def test_normality_shapirowilk(data, verbose=True):
     else:
         normality = False
     if verbose:
-        print(
-            f"  - Shapiro-Wilk: {
+        print(f"  - Shapiro-Wilk: {
             "Normal Distribution" if normality else "Non-Normal Distribution"
-        } (p = {pval:0.2E})\n"
-        )
+        } (p = {pval:0.2E})\n")
     return normality, pval
 
 
@@ -33,11 +31,28 @@ def test_difference_wilcoxon(vec1, vec2, verbose=True):
     else:
         different = True
     if verbose:
-        print(
-            f"  - Wilcoxon: {
+        print(f"  - Wilcoxon: {
             "Significantly Different" if different else "Not Significantly Different"
-        } (p = {res.pvalue:0.2E})\n"
-        )
+        } (p = {res.pvalue:0.2E})\n")
+    return different, res.pvalue
+
+
+def test_difference_ttest(vec1, vec2, equal_var=False, verbose=True):
+    """
+    Test for differences between `vec1` and `vec2` using T test for 2 independent samples
+    (e.g. from Groups A and B).
+    Equal variance assumed => Student's T test
+    Unequal variance assumed => Welch's T test
+    """
+    res = ttest_ind(vec1, vec2, equal_var=equal_var)
+    if res.pvalue > 0.05:
+        different = False
+    else:
+        different = True
+    if verbose:
+        print(f"  - T-test: {
+            'Significantly Different' if different else 'Not Significantly Different'
+        } (p = {res.pvalue:0.2E})\n")
     return different, res.pvalue
 
 
