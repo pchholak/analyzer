@@ -10,7 +10,14 @@ from .stats import PairedStatisticalAnalyzer, StatisticalAnalyzer
 class IntegratedPairedAnalyzer(PairedStatisticalAnalyzer, PairedGraphicalAnalyzer):
 
     def paired_histograms(
-        self, col, bins=20, caption="", ax=None, labels=..., annotate_diff=None
+        # self, col, bins=20, caption="", ax=None, labels=..., annotate_diff=None
+        self,
+        col,
+        bins=20,
+        caption="",
+        ax=None,
+        labels=(None, None),
+        annotate_diff=None,
     ):
         """
         Add optional statistical difference annotation to the plot.
