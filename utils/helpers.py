@@ -5,19 +5,19 @@ import matplotlib.pyplot as plt
 from scipy.stats import ranksums, shapiro, ttest_ind
 
 
-def test_normality_shapirowilk(data, verbose=True):
+def test_normality_shapirowilk(x, verbose=True):
     """
     Test for normality of `data` using Shapiro-Wilk Test.
     """
-    _, pval = shapiro(data)
+    _, pval = shapiro(x)
     if pval > 0.05:
         normality = True
     else:
         normality = False
     if verbose:
         print(f"  - Shapiro-Wilk: {
-            "Normal Distribution" if normality else "Non-Normal Distribution"
-        } (p = {pval:0.2E})\n")
+            'Normal Distribution' if normality else 'Non-Normal Distribution'
+        } (p = {pval:0.2E}: n = {len(x)})\n")
     return normality, pval
 
 

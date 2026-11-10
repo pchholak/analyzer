@@ -23,19 +23,27 @@ class PairedStatisticalAnalyzer(PairedAnalyzer):
         cols_of_interest,
         label1="Group-A",
         label2="Group-B",
+        drop_nans: bool = True,
     ) -> None:
         super().__init__(data_dir, results_dir, data1, data2)
         self.cols_of_interest = cols_of_interest
         self.label1 = label1
         self.label2 = label2
+        self.drop_nans = drop_nans
 
         # Run normality checks on all columns of interest in both data containers
         self.normality = {}
         for col in cols_of_interest:
             print(f"\nNormality check on {self.label1}/'{col}':")
-            self.normality[("data1", col)] = test_normality_shapirowilk(self.df1[col])
+            x = self.df1[col].copy()
+            if self.drop_nans:
+                x.dropna(inplace=True)
+            self.normality[("data1", col)] = test_normality_shapirowilk(x)
             print(f"\nNormality check on {self.label2}/'{col}':")
-            self.normality[("data2", col)] = test_normality_shapirowilk(self.df2[col])
+            x = self.df2[col].copy()
+            if self.drop_nans:
+                x.dropna(inplace=True)
+            self.normality[("data2", col)] = test_normality_shapirowilk(x)
 
     def test_difference_col(self, col):
         """
@@ -48,12 +56,21 @@ class PairedStatisticalAnalyzer(PairedAnalyzer):
             method = "t"
 
         # Compare data containers
+        x1 = self.df1[col].copy()
+        x2 = self.df2[col].copy()
+        if self.drop_nans:
+            x1.dropna(inplace=True)
+            x2.dropna(inplace=True)
         if method == "Wilcoxon":
-            print(f"Difference between {self.label1} and {self.label2} along '{col}':")
-            different, pval = test_difference_wilcoxon(self.df1[col], self.df2[col])
+            print(
+                f"Difference between {self.label1} (n_{self.label1} = {len(x1)}) and {self.label2} (n_{self.label2} = {len(x2)}) along '{col}':"
+            )
+            different, pval = test_difference_wilcoxon(x1, x2)
         elif method == "t":
-            print(f"Difference between {self.label1} and {self.label2} along '{col}':")
-            different, pval = test_difference_ttest(self.df1[col], self.df2[col])
+            print(
+                f"Difference between {self.label1} (n_{self.label1} = {len(x1)}) and {self.label2} (n_{self.label2} = {len(x2)}) along '{col}':"
+            )
+            different, pval = test_difference_ttest(x1, x2)
         else:
             raise ValueError(f"The `method={method}` is not recognized.")
         return different, pval, method
@@ -62,7 +79,12 @@ class PairedStatisticalAnalyzer(PairedAnalyzer):
 class StatisticalAnalyzer(SingleDataAnalyzer):
 
     def __init__(
-        self, data_dir, results_dir, data_container: DataContainer, cols_of_interest
+        self,
+        data_dir,
+        results_dir,
+        data_container: DataContainer,
+        cols_of_interest,
+        # drop_nans: bool = True,
     ) -> None:
         super().__init__(data_dir, results_dir, data_container)
         self.cols_of_interest = cols_of_interest
@@ -71,7 +93,10 @@ class StatisticalAnalyzer(SingleDataAnalyzer):
         self.normality = {}
         for col in cols_of_interest:
             print(f"\nNormality check on '{col}':")
-            self.normality[col] = test_normality_shapirowilk(self.df[col])
+            x = self.df[col].copy()
+            # if drop_nans:
+            #     x.dropna(inplace=True)
+            self.normality[col] = test_normality_shapirowilk(x)
 
     def calculate_group_diff(
         self, col_outcome: str, col_grp: str, cols_covar=[], method: str = "OLS"
